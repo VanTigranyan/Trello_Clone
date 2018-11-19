@@ -15,6 +15,7 @@ import {
   DropdownItem
 } from "reactstrap";
 import { Link, withRouter } from 'react-router-dom';
+import {connect} from 'react-redux';
 
 export const palette = {
   darkblue: `#051937`,
@@ -79,6 +80,12 @@ const Toggle = styled(DropdownToggle)`
   }
 `;
 
+const mapStatetoProps = state => {
+  return {
+    board: state.listsReducer.lists,
+  }
+}
+
  class Header extends React.Component {
   constructor(props) {
     super(props);
@@ -92,6 +99,14 @@ const Toggle = styled(DropdownToggle)`
     this.setState({
       isOpen: !this.state.isOpen
     });
+  }
+
+  componentDidUpdate() {
+    let location = this.props.location.pathname;
+    let i = location.lastIndexOf('/');
+    let id = location.splice(i);
+
+
   }
 
   render() {
@@ -142,4 +157,4 @@ const Toggle = styled(DropdownToggle)`
   }
 }
 
-export default withRouter(Header);
+export default withRouter(connect(mapStatetoProps)(Header));

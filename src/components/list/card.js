@@ -108,7 +108,8 @@ class Card extends React.Component {
 
   toggleCardEdit = () => {
     this.setState({
-      isCardEditing: !this.state.isCardEditing
+      isCardEditing: !this.state.isCardEditing,
+      card: this.props.card
     })
   }
 

@@ -312,7 +312,7 @@ console.log('args----', obj)
               <Row {...provided.dragHandleProps}>
                 {
                   this.state.isEditable ? (
-                    <Add key={1} style={{margin: 0}} value={this.state.updateValue}
+                    <Add key={1} style={{margin: 0, width: '153px'}} value={this.state.updateValue}
                       onChange={this.handleInput}
                     />
                   ) : (
