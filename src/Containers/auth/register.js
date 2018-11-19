@@ -27,7 +27,7 @@ const LoginButton = styled(Button)`
 const LoginCard = styled(Card)`
   &&{min-width: 400px;
   max-width: 450px;
-  margin: 30px auto;
+  margin: 65px auto;
   background: #007789;
   color: #F9F871;
   border: 2px solid #7ED57B;}
@@ -135,7 +135,7 @@ class Register extends React.Component {
     const result = checkForm();
 
     this.setState({
-      formIsValid: result
+      formIsValid: this.formIsValid && result
     })
   }
 
@@ -213,7 +213,7 @@ class Register extends React.Component {
               </FormGroup>
 
               <h6>
-                Already have an account?
+                Already have an account? &nbsp;
                 <span>
                   <FormLink to="/login" onClick={this.props.clearState}>Login Now!</FormLink>
                 </span>
@@ -228,18 +228,18 @@ class Register extends React.Component {
                 Register
               </LoginButton>
 
-              {this.props.error ? (
-                <Alert color="danger">
-                  <h4 className='alert-heading'>Something went wrong!</h4>
-                  <hr/>
-                  <p className="mb-0">
-                    The mail used by you in form already registered!
-                    If you would like to reset your password go to Restore Page!
-                  </p>
-                </Alert>
-              ) :  null}
 
             </Form>
+            {this.props.error ? (
+              <Alert color="danger">
+                <h4 className='alert-heading'>Something went wrong!</h4>
+                <hr/>
+                <p className="mb-0">
+                  The mail used by you in form already registered!
+                  If you would like to reset your password go to Restore Page!
+                </p>
+              </Alert>
+            ) :  null}
           </CardBody>
         </LoginCard>
 

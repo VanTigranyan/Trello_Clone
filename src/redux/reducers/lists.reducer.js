@@ -98,13 +98,19 @@ const listsReducer = (state = initialState, action = {}) => {
           case listsTypes.DELETE_CARD_SUCCESS:
             let dlists = [...state.lists];
             let dlist = dlists[action.listInd];
-            let dcards = [...ulist.cards];
+            console.log(dlist);
+            let dcards = [...dlist.cards];
             dcards.splice(action.cardInd, 1);
             dlist.cards = dcards;
             dlists[action.listInd] = dlist;
             return {...state, isFetching:false, lists: dlists};
           case listsTypes.DELETE_CARD_FAILURE:
             return {...state, isFetchingL: false, error: action.paylaod};
+
+          /* Reorder Lists*/
+        case 'REORDER_LISTS':
+        console.log('lists---', action.payload)
+          return {...state, lists: action.payload}
 
     default:  return state
   }

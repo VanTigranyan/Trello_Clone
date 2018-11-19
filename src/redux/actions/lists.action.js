@@ -142,3 +142,9 @@ export const deleteCardAction = (cardId, i, listIndex) => dispatch => {
       })
     })
 }
+export const reorderListAction = (lists) => dispatch => {
+  dispatch({
+    type: 'REORDER_LISTS',
+    payload: lists
+  })
+}

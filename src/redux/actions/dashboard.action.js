@@ -70,16 +70,11 @@ export const deleteBoardAction = (id, index) => dispatch => {
 }
 
 
-export const updateBoardAction = (id,index, name) => (dispatch) => {
+export const updateBoardAction = (obj,index) => (dispatch) => {
   dispatch({
     type: dashTypes.UPDATE_BOARD_FETCHING
   })
-  let obj = {
-    boardId: id,
-    boardParams: {
-      boardName: name
-    }
-  }
+  
   Service.updateBoard(obj)
     .then(res => {
       dispatch({

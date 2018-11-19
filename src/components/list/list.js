@@ -1,21 +1,22 @@
 import React from "react";
 import styled from "styled-components";
 import { placeholder, darken } from 'polished';
-import { withRouter } from "react-router-dom";
 import { palette, Button } from "../../Containers/dashboard/dashboard";
 import Card from './card';
-import { Trash2, Edit, Save, XCircle, XSquare, PlusSquare } from 'react-feather';
+import { Trash2, Edit, Save, XCircle, XSquare, PlusSquare, MinusSquare } from 'react-feather';
 import { Add } from '../../Containers/dashboard/dashboard';
 import { CSSTransitionGroup } from 'react-transition-group';
+import { Droppable, Draggable } from 'react-beautiful-dnd';
 
 const Wrapper = styled.div`
   background: ${palette.darkblue};
   color: ${palette.lightYellow};
   border-radius: 5px;
   box-shadow: 2px 2px 5px black;
-  margin: 10px 10px;
+  margin-right: 10px;
   padding: 5px;
   min-width: 260px;
+  max-height: 475px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -49,7 +50,7 @@ const Row  = styled(Wrapper)`
   min-width: auto;
   background: transparent;
   flex-direction: row;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   border: 0;
@@ -141,10 +142,21 @@ const CardButton = styled.button`
   }
 `;
 
+const InnerWrapper = styled.div`
+  overflow-y: scroll;
+  min-height: 58px;
+  max-height: 410px;
+${({isDraggingOver}) => isDraggingOver &&`
+  background: linear-gradient(to right top, #6d327c, #485DA6, #00a1ba, #00BF98, #36C486);
+  min-height: 58px;
+`}
+`;
+
 export default class List extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      listCardsIsEmpty: false,
       isEditable: false,
       isCardCreating: false,
       carddisabled: true,
@@ -152,7 +164,30 @@ export default class List extends React.Component {
       cardName: '',
       cardDesc: '',
       particip: '',
+      isCardEditing: false,
     };
+  }
+
+  componentDidMount() {
+    if(this.props.list.cards.length === 0) {
+      this.setState({
+        listCardsIsEmpty: true,
+      })
+    }
+  }
+
+  componentDidUpdate(nextProps) {
+    if(this.props.list.cards.length !== nextProps.list.cards.length) {
+      if(nextProps.list.cards.length !== 0) {
+        this.setState({
+          listCardsIsEmpty: false,
+        })
+      } else {
+        this.setState({
+          listCardsIsEmpty: true,
+        })
+      }
+    }
   }
 
   onEdit = () => {
@@ -211,7 +246,15 @@ export default class List extends React.Component {
       let el = document.querySelector('input[name="particip"]');
       el.value = null;
     }
+  }
 
+  onDeletePart = (i) => {
+    let parts = [...this.state.participants];
+    parts.splice(i, 1);
+
+    this.setState({
+      participants: [...parts]
+    })
   }
 
   onCardCreate = () => {
@@ -256,99 +299,136 @@ console.log('args----', obj)
 
   render() {
     return (
-      <Wrapper>
-        <Row>
-          {
-            this.state.isEditable ? (
-              <Add key={1} style={{margin: 0}} value={this.state.updateValue}
-                onChange={this.handleInput}
-              />
-            ) : (
-              <h4 key={2}>{this.props.list.listName}</h4>
-            )
-          }
-          <Icons>
-
-            {
-              this.state.isEditable ?
-                <DeleteBtn as={ Save }
-                  onClick={this.onListUpdate}
-                /> : <DeleteBtn onClick={this.onDeleteList}/>
-            }
-            {
-              this.state.isEditable ?
-                <DeleteBtn as={ XCircle } onClick={this.onEditCancel}/> : <DeleteBtn as={Edit} onClick={this.onEdit}/>
-            }
-
-          </Icons>
-        </Row>
+      <Draggable
+        draggableId={this.props.list.id}
+        index={this.props.index}
+      >
         {
-          this.state.isCardCreating ? (
-            <CardWrapper as={CSSTransitionGroup}
-              transitionName="example"
-              transitionEnterTimeout={500}
-              transitionLeaveTimeout={300}
-              key={1}
+          (provided) => (
+            <Wrapper
+              {...provided.draggableProps}
+              ref={provided.innerRef}
             >
-              <Row>
-                <h5>Create Card</h5>
-                <DeleteBtn as={XSquare} onClick={this.toggleCreating}/>
-              </Row>
-              <CardInput
-                placeholder='The name of the Card'
-                name='cardName'
-                onChange={this.onCreateChange}
-              />
-              <ContWrapper>
-                <CardInput as='textarea'
-                  placeholder='Input Description'
-                  height='75px'
-                  onChange={this.onCreateChange}
-                  name='cardDesc'
-                />
+              <Row {...provided.dragHandleProps}>
                 {
-                  this.state.participants.map((part, i) => {
-                    return <p key={i}>{part}</p>
-                  })
+                  this.state.isEditable ? (
+                    <Add key={1} style={{margin: 0}} value={this.state.updateValue}
+                      onChange={this.handleInput}
+                    />
+                  ) : (
+                    <h4 key={2}>{this.props.list.listName}</h4>
+                  )
                 }
-                <Wr style={{position: 'relative'}}>
-                  <CardInput
-                    placeholder='Input Participants'
-                    onChange={this.onCreateChange}
-                    name='particip'
-                  />
-                  <DeleteBtn as={PlusSquare}  size={24} style={{
-                    position: "relative",
-                    top: "10px",
-                    right: "39px",
-                    'minHeight': '30px',
-                    'minWidth': '30px'
-                  }}
-                    onClick={this.onPartAdd}
-                  />
-                </Wr>
-                <CardButton onClick={this.onCardCreate} disabled={this.state.carddisabled}>Create Card</CardButton>
-              </ContWrapper>
-            </CardWrapper>
-          ) : (
-            <ListButton onClick={this.toggleCreating}>+ Add new Card</ListButton>
+                <Icons>
+
+                  {
+                    this.state.isEditable ?
+                      <DeleteBtn as={ Save }
+                        onClick={this.onListUpdate}
+                      /> : <DeleteBtn onClick={this.onDeleteList}/>
+                  }
+                  {
+                    this.state.isEditable ?
+                      <DeleteBtn as={ XCircle } onClick={this.onEditCancel}/> : <DeleteBtn as={Edit} onClick={this.onEdit}/>
+                  }
+
+                </Icons>
+              </Row>
+              {
+                this.state.isCardCreating ? (
+                  <CardWrapper as={CSSTransitionGroup}
+                    transitionName="example"
+                    transitionEnterTimeout={500}
+                    transitionLeaveTimeout={300}
+                    key={1}
+                  >
+                    <Row>
+                      <h5>Create Card</h5>
+                      <DeleteBtn as={XSquare} onClick={this.toggleCreating}/>
+                    </Row>
+                    <CardInput
+                      placeholder='The name of the Card'
+                      name='cardName'
+                      onChange={this.onCreateChange}
+                    />
+                    <ContWrapper>
+                      <CardInput as='textarea'
+                        placeholder='Input Description'
+                        height='75px'
+                        onChange={this.onCreateChange}
+                        name='cardDesc'
+                      />
+                      {
+                        this.state.participants.map((part, i) => {
+                          return (
+                            <div key={i}
+                              style={{display: "flex", justifyContent: 'space-between'}}
+                            >
+                              {part}
+                              <DeleteBtn as={MinusSquare}
+                                onClick={() => this.onDeletePart(i)}
+                              />
+                            </div>
+                          )
+                        })
+                      }
+                      <Wr style={{position: 'relative'}}>
+                        <CardInput
+                          placeholder='Input Participants'
+                          onChange={this.onCreateChange}
+                          name='particip'
+                        />
+                        <DeleteBtn as={PlusSquare}  size={24} style={{
+                          position: "relative",
+                          top: "10px",
+                          right: "39px",
+                          'minHeight': '30px',
+                          'minWidth': '30px'
+                        }}
+                          onClick={this.onPartAdd}
+                        />
+                      </Wr>
+                      <CardButton onClick={this.onCardCreate} disabled={this.state.carddisabled}>Create Card</CardButton>
+                    </ContWrapper>
+                  </CardWrapper>
+                ) : (
+                  <ListButton onClick={this.toggleCreating}>+ Add new Card</ListButton>
+                )
+              }
+              <Droppable
+                droppableId={this.props.id}
+                type='cards'
+              >
+                {(provided, snapshot) => (
+                  <InnerWrapper
+                    cardsAreEmpty={this.state.listCardsIsEmpty}
+                    {...provided.droppableProps}
+                    ref = {provided.innerRef}
+                    isDraggingOver={snapshot.isDraggingOver}
+                  >
+                    {
+                      this.props.list.cards.map((card, i) =>  (
+
+                        <Card
+                          card={card}
+                          key={i}
+                          index={i}
+                          listIndex={this.props.index}
+                          onUpdateCard={this.props.onUpdateCard}
+                          onDeleteCard={this.props.onDeleteCard}
+                          toggleCardEdit={this.toggleCardEdit}
+                        />
+
+                      ))
+                    }
+                    {provided.placeholder}
+                  </InnerWrapper>
+                )}
+              </Droppable>
+            </Wrapper>
           )
         }
-        <div style={{overflowY: 'scroll', maxHeight: '410px'}}>
-          {
-            this.props.list.cards.map((card, i) =>  (
-
-              <Card
-                card={card}
-                key={i}
-                index={i}
-                listIndex={this.props.index}
-              />
-
-            ))
-          }
-        </div>
-      </Wrapper>
+      </Draggable>
     );
   }
 }

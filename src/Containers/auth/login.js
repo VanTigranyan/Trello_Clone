@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { withRouter, Redirect, Link } from "react-router-dom";
+import { withRouter, Link } from "react-router-dom";
 import { loginAction, clearStateAction } from "../../redux/actions/auth.action";
 import { getBoardsAction } from '../../redux/actions/dashboard.action';
 import { connect } from "react-redux";
@@ -35,7 +35,7 @@ const LoginCard = styled(Card)`
   && {
     min-width: 400px;
     max-width: 450px;
-    margin: 100px auto;
+    margin: 140px auto;
     background: #007789;
     color: #f9f871;
     border: 2px solid #7ed57b;
@@ -226,7 +226,7 @@ class Login extends React.Component {
                 </FormGroup>
 
                 <h6>
-                  Don't have an account yet?
+                  Don't have an account yet? &nbsp;
                   <span>
                     <FormLink to="/register" onClick={this.props.clearState}>
                       Register Now!
@@ -243,16 +243,16 @@ class Login extends React.Component {
                   Login
                 </LoginButton>
 
-                {this.props.error ? (
-                  <Alert color="danger">
-                    <h4 className="alert-heading">Something went wrong!</h4>
-                    <hr />
-                    <p className="mb-0">
-                      You entered wrong credentials! Check them and try again!
-                    </p>
-                  </Alert>
-                ) : null}
               </Form>
+              {this.props.error ? (
+                <Alert color="danger">
+                  <h4 className="alert-heading">Something went wrong!</h4>
+                  <hr />
+                  <p className="mb-0">
+                    You entered wrong credentials! Check them and try again!
+                  </p>
+                </Alert>
+              ) : null}
             </CardBody>
           </LoginCard>
         </Wrapper>

@@ -7,13 +7,14 @@ import {
   NavbarToggler,
   NavbarBrand,
   Nav,
-  NavItem,
   NavLink,
+  NavItem,
   UncontrolledDropdown,
   DropdownToggle,
   DropdownMenu,
   DropdownItem
 } from "reactstrap";
+import { Link, withRouter } from 'react-router-dom';
 
 export const palette = {
   darkblue: `#051937`,
@@ -28,6 +29,8 @@ const NavBar = styled(navbar)`
   background: ${palette.grayblue};
   color: ${palette.lightYellow};
   height: 100%;
+  display: flex;
+  align-items: center;
 `;
 
 const Anchor = styled(NavLink)`
@@ -65,16 +68,18 @@ const MenuItem = styled(DropdownItem)`
 const Toggle = styled(DropdownToggle)`
   && {
     && {
+      background: ${palette.grayblue};
       color: ${palette.lightYellow};
+      border-radius: 5px;
       &:hover {
         background: ${palette.turqoise};
-        border-radius: 5px;
+
       }
     }
   }
 `;
 
-export default class Header extends React.Component {
+ class Header extends React.Component {
   constructor(props) {
     super(props);
 
@@ -92,9 +97,9 @@ export default class Header extends React.Component {
   render() {
     console.log(this.props)
     return (
-      <div style={{height: '10%'}}>
+      <div style={{minHeight: '10%'}}>
         <NavBar light expand="md">
-          <NavbarBrand href="/" style={{height: '100%', width: '36%'}}>
+          <NavbarBrand href="/">
             <img src={logo} alt="logo" width="73%" height="100%" />
           </NavbarBrand>
           {this.props.isLoggedIn ? (
@@ -103,15 +108,20 @@ export default class Header extends React.Component {
               <Collapse className='' isOpen={this.state.isOpen} navbar>
                 <Nav className="ml-auto" navbar>
                   {
-                    /*<NavItem>
-                      <Anchor href="/components/">Components</Anchor>
-                    </NavItem>
-                    <NavItem>
-                      <Anchor href="https://github.com/reactstrap/reactstrap">
-                    GitHub
-                      </Anchor>
-                    </NavItem>*/
+                    // /*<NavItem>
+                    //   <Anchor href="/components/">Components</Anchor>
+                    // </NavItem>
                   }
+                  {
+                    this.props.location.pathname !== '/dashboard' ?
+                      (<NavItem>
+                        <Anchor href='/dashboard'>
+                          To Dashboard
+                        </Anchor>
+                      </NavItem>):
+                      (null)
+                  }
+
                   <UncontrolledDropdown nav inNavbar>
                     <Toggle nav caret>
                       {this.props.user.name}
@@ -131,3 +141,5 @@ export default class Header extends React.Component {
     );
   }
 }
+
+export default withRouter(Header);

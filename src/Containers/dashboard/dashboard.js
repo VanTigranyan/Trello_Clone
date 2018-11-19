@@ -130,7 +130,7 @@ const mapDispatchtoProps = dispatch => {
     getBoards: () => dispatch(getBoardsAction()),
     createBoard: (obj) => dispatch(createBoardAction(obj)),
     deleteBoard: (id, i) => dispatch(deleteBoardAction(id,i)),
-    updateBoard: (id,i,name) => dispatch(updateBoardAction(id,i,name)),
+    updateBoard: (obj, i) => dispatch(updateBoardAction(obj, i)),
   }
 }
 
@@ -159,7 +159,9 @@ class Dashboard extends React.Component {
   }
 
   addClose = (event) => {
-    event.stopPropagation();
+    if(event) {
+      event.stopPropagation();
+    }
     this.setState({
       add:false
     })

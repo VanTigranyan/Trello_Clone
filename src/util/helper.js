@@ -29,7 +29,7 @@ export const validate = (fieldName, value) => {
 
     if(value && !value.match(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/i)) {
       result.isValid = false;
-      result.message = 'The Password must be at least 6 characterwws long and contain at least one letter and one number!'
+      result.message = 'The Password must be at least 6 characters long and contain at least and one number!'
     }
   }
 
@@ -63,10 +63,19 @@ export const validate = (fieldName, value) => {
 export const checkForm = () => {
   console.log('form is checking');
   let isValid = true;
+  let fieldsValidate = [];
   let arr = Array.from(document.getElementsByTagName('input'));
   arr.forEach(el => {
     let val = el.value.trim();
     if(val === undefined || val===null || val==="") {
+      isValid = false;
+    }
+  })
+  arr.forEach(el => {
+    let res = validate(el.name, el.value);
+    fieldsValidate.push(res);
+    let whole = fieldsValidate.find(el => el.isValid === false);
+    if(whole) {
       isValid = false;
     }
   })

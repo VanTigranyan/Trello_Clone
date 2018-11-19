@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Trash2, Edit, Save, XSquare } from 'react-feather';
-import {AddBlock, Add, AddButton} from './dashboard';
+import { Add } from './dashboard';
 import { Link } from 'react-router-dom';
 
 
@@ -114,7 +114,15 @@ export default class BoardItem extends React.Component {
 
   onUpdate = (event) => {
     event.stopPropagation();
-    this.props.onUpdate(this.props.id, this.props.index, this.state.updateValue);
+
+    let obj = {
+      boardId: this.props.id,
+      boardParams: {
+        boardName: this.state.updateValue,
+      }
+    }
+
+    this.props.onUpdate(obj, this.props.index);
   }
 
   render() {
